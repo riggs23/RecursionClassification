@@ -11,22 +11,30 @@ import numpy as np
 import matplotlib.pyplot as plt
 from torch.utils.data import Dataset, DataLoader
 # from torchvision import transforms, utils, datasets
+import re
 
 
 class RecursionDataset(Dataset):
     """Recursion Dataset for Big Data Capstone."""
 
-    def __init__(self, csv_file, root_dir, transform=None):
+    def __init__(self, csv_file1, root_dir, csv_file2=None, transform=None):
         """
         Args:
-            csv_file (string): Path to the csv file with annotations.
+            csv_file1 (string): Path to the csv file with most annotations.
             root_dir (string): Directory with all the images.
+            csv_file2 (string): Path to the csv file with control annotations.
             transform (callable, optional): Optional transform to be applied
                 on a sample.
         """
-        self.csv = pd.read_csv(csv_file)
+        self.csv = pd.read_csv(csv_file1)
+        if csv_file2 != None:
+            csv2 = pd.read_csv(csv_file2).loc[:,'id_code':'sirna']
+            self.csv = pd.concat([self.csv, csv2])\
+                         .sort_values(['id_code'])\
+                         .reset_index()\
+                         .drop(columns=['index'])
         self.root_dir = root_dir
-        self.directory = sorted( os.listdir(self.root_dir) )  
+        self.directory = sorted( os.listdir(self.root_dir) )
 	
     def __len__(self):
         return len(self.directory)//6
@@ -60,14 +68,14 @@ class RecursionDataset(Dataset):
             #print("result: ", result)
             sirna = result.iloc[0].loc["sirna"]
         except:
-            sirna = -1
+            sirna = -2
         
-        
-        sirnaTensor = torch.tensor([sirna])	
+        if sirna=='UNTREATED': sirna = -1
+        else: sirna = float(re.search('[0-9]+', sirna).group())
+        sirnaTensor = torch.tensor([sirna])
         return totalTensor.float(), sirnaTensor.float()
         
-
-test_dataset = RecursionDataset(csv_file='../train-labels/train.csv', root_dir='../train-data/HEPG2-01/Plate1')
+test_dataset = RecursionDataset(csv_file1='../train-labels/train.csv', root_dir='../train-data/HEPG2-01/Plate1', csv_file2='../train-labels/train_controls.csv')
 
 #print(len(test_dataset))
 
