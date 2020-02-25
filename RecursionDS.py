@@ -42,6 +42,10 @@ class RecursionDataset(Dataset):
                      .sort_values(['id_code', 'site'])\
                      .reset_index(drop=True)
         
+        # Missing pictures that must be removed from csv file
+        missingPics = ['HUVEC-06_1_B18', 's2']
+        self.csv = self.csv[self.csv.id_code != missingPics[0] or self.csv.site != missingPics[1]]
+        
         if shuffle == True:
             self.csv = self.csv.sample(frac=1).reset_index(drop=True)
         self.root_dir = root_dir
