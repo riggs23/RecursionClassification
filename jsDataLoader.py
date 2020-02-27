@@ -69,12 +69,14 @@ class RecursionDataset(Dataset):
         except:
             sirna = -2
         
-        if sirna=='UNTREATED': sirna = -1
-        else: sirna = float(re.search('[0-9]+', sirna).group())
+        #it seems python3 handles csv differently, and sirna is already an int, not a string
+        if type(sirna) != np.int64:
+            if sirna=='UNTREATED': sirna = -1
+            else: sirna = float(re.search('[0-9]+', sirna).group())
         sirnaTensor = torch.tensor([sirna])
         return totalTensor.float(), sirnaTensor.float()
         
-test_dataset = RecursionDataset(csv_file1='../train-labels/train.csv', root_dir='../train-data', csv_file2='../train-labels/train_controls.csv')
+#test_dataset = RecursionDataset(csv_file1='../data/train-labels/train.csv', root_dir='../data/train-data', csv_file2='../data/train-labels/train_controls.csv')
 
 #print(len(test_dataset))
 
@@ -83,11 +85,11 @@ test_dataset = RecursionDataset(csv_file1='../train-labels/train.csv', root_dir=
 #   print("data: ", data.shape)
 #   print("label: ", label.item())
 
-dataloader = DataLoader(test_dataset, batch_size=4)
+#dataloader = DataLoader(test_dataset, batch_size=4)
 
-for index, data in enumerate(dataloader):
-    image = data[0]
-    label = data[1]
-    
-    print("image: ", image.shape)
-    print("label: ", label)
+#for index, data in enumerate(dataloader):
+#    image = data[0]
+#    label = data[1]
+#    
+#    print("image: ", image.shape)
+#    print("label: ", label)

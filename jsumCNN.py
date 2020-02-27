@@ -9,6 +9,7 @@ class ConvNetwork(nn.Module):
         output = numClasses
 
         self.net = models.vgg19(pretrained=True)
+        self.net.features[0] = nn.Conv2d(channels, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
         self.net.classifier[6] = nn.Linear(4096, numClasses)
 #        self.net = nn.Sequential(
 #            nn.Conv2d(channels, 10, (3,3), padding=(1,1)),
@@ -25,3 +26,5 @@ class ConvNetwork(nn.Module):
     
     def freezeLayers(numLayers):
         pass
+
+
