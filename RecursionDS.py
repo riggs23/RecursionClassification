@@ -1,15 +1,10 @@
 from __future__ import print_function, division
-# Correction for PIL
-import sys
-#sys.path.append('/lib/python3.7/site-packages')
-from PIL import Image
 import os
 import torch
 import pandas as pd
-from skimage import io, transform
+from skimage import io
 import numpy as np
-import matplotlib.pyplot as plt
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 # from torchvision import transforms, utils, datasets
 import re
 
@@ -42,13 +37,15 @@ class RecursionDataset(Dataset):
                      .sort_values(['id_code', 'site'])\
                      .reset_index(drop=True)
         
-        # Missing pictures that must be removed from csv file
-        missingPics = ['HUVEC-06_1_B18', 's2']
-        self.csv = self.csv[self.csv.id_code != missingPics[0] or self.csv.site != missingPics[1]]
+        # Remove pic observations (those without actual pic files) from csv
+        missingPics = [['HUVEC-06_1_B18', 's2'], ["RPE-04_3_E04", 's1']] 
+        for pic in missingPics:
+            self.csv = self.csv[~((self.csv['id_code'] == pic[0]) & (self.csv['site'] == pic[1]))]
         
-        if shuffle == True:
-            self.csv = self.csv.sample(frac=1).reset_index(drop=True)
         self.root_dir = root_dir
+        
+        # Calculate number of unique classes
+        self.n_classes = len(np.unique(self.csv['sirna']))
     
     def __len__(self):
         return self.csv.shape[0]
@@ -58,9 +55,15 @@ class RecursionDataset(Dataset):
         pathParts = self.csv.iloc[idx,:]
         pathGen = os.path.join(self.root_dir, pathParts['experiment'], pathParts['plate'])
         filenameGen = pathParts['well']+'_'+pathParts['site']+'_w'
+
         for i in range(1,7):
             filenameFull = filenameGen+str(i)+'.png'
             pathFull = os.path.join(pathGen, filenameFull)
+
+            if not os.path.isfile(pathFull):
+                print("Path: ", pathFull)
+                return torch.zeros(size=(0,1)), torch.zeros(size=(0,1))
+
             image = io.imread(pathFull)
             if i == 1:
                 totalTensor = torch.from_numpy(image).unsqueeze(0)
@@ -71,10 +74,10 @@ class RecursionDataset(Dataset):
         try:
             sirna = self.csv.iloc[idx,:].loc['sirna']
         except:
-            sirna = 0
+            sirna = 1139
         
-        if sirna=='UNTREATED': sirna = 0
+        if sirna=='UNTREATED': sirna = 1138
         else: sirna = float(re.search('[0-9]+', sirna).group())
         sirnaTensor = torch.tensor([sirna])
+        #print("tT: ", totalTensor.shape, " sT:", sirnaTensor.shape)
         return totalTensor.float(), sirnaTensor.float()
-
