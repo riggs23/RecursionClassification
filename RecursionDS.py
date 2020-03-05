@@ -6,6 +6,7 @@ from skimage import io
 import numpy as np
 from torch.utils.data import Dataset
 # from torchvision import transforms, utils, datasets
+from torchvision import transforms as trfm
 import re
 
 
@@ -80,4 +81,12 @@ class RecursionDataset(Dataset):
         else: sirna = float(re.search('[0-9]+', sirna).group())
         sirnaTensor = torch.tensor([sirna])
         #print("tT: ", totalTensor.shape, " sT:", sirnaTensor.shape)
+
+        # Apply transformation
+        if transform != None:
+            toPil = trfm.ToPILImage()
+            randTransform = trfm.RandomChoice(transform)
+            toTensor = trfm.ToTensor()
+            imageTensor = toTensor(randTransform(toPil(imageTensor)))
+
         return totalTensor.float(), sirnaTensor.float()
