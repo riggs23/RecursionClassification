@@ -161,16 +161,17 @@ for epoch in range(n_epochs):
       if phase == 'val' and phase_acc > best_acc:
           best_acc = phase_acc
           best_model_wts = copy.deepcopy(model.state_dict())
-      
-          # Save loss and accuracy for reporting
-          if phase == 'train':
-              train_losses.append(phase_loss)
-              train_acc.append(phase_acc)
-          else:
-              val_losses.append(phase_loss)
-              val_acc.append(phase_acc)
           
       loop.update(1)
+    
+    # Save loss and accuracy for reporting
+    if phase == 'train':
+        train_losses.append(phase_loss)
+        train_acc.append(phase_acc.item())
+    else:
+        val_losses.append(phase_loss)
+        val_acc.append(phase_acc.item())
+    
     loop.close()
 
 time_elapsed = time.time() - since
