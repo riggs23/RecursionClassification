@@ -44,6 +44,7 @@ from torch.nn.parameter import Parameter
 import pandas as pd
 import random
 import copy
+import time
 
 from IPython.core.ultratb import AutoFormattedTB
 
@@ -100,6 +101,7 @@ objective = nn.CrossEntropyLoss()
 optimizer = optim.Adam(params_to_update, lr=lr)
 if load_path != '':
   optimizer.load_state_dict(state_loaded['optimizer'])
+since = time.time()
 
 best_model_wts = copy.deepcopy(model.state_dict())
 best_acc = 0.0
