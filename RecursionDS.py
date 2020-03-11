@@ -47,6 +47,21 @@ class RecursionDataset(Dataset):
         
         # Calculate number of unique classes
         self.n_classes = len(np.unique(self.csv['sirna']))
+        
+        #additions for validation set
+        exp_list = self.csv.experiment.unique()
+        random.Random(4).shuffle(exp_list) #no bias in selection, set seed for replicating results
+        exp_train = exp_list[:round(prop_train*len(exp_list))] #set to 100*prop_train% of the total train data we have
+        if phase == 'train':
+          self.csv = self.csv[self.csv.experiment.isin(exp_train)]
+          self.csv.sort_values(['id_code', 'site'])\
+                  .reset_index(drop = True)
+        elif phase == 'val':
+          self.csv = self.csv[-self.csv.experiment.isin(exp_train)]
+          self.csv.sort_values(['id_code', 'site'])\
+                  .reset_index(drop = True)
+        else: #just use whole dataset
+          self.csv = self.csv
     
     def __len__(self):
         return self.csv.shape[0]
