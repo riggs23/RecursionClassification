@@ -3,7 +3,7 @@ from __future__ import print_function, division
 # Set variables for testing
 num_workers = 30
 batch_size = 32
-n_epochs = 3
+n_epochs = 1
 old_n_epochs = 0
 lr = 3e-4
 save_path = f'./model/resnet18_{n_epochs+old_n_epochs}'
@@ -54,11 +54,11 @@ from RecursionDS import RecursionDataset
 
 assert torch.cuda.is_available() # GPU must be available
 
-train_dataset = RecursionDataset(csv_file1='../recursion_data/train-labels/train.csv', root_dir='../recursion_data/train-data', csv_file2='../recursion_data/train-labels/train_controls.csv', phase = 'train', prop_train=prop_train)
-val_dataset = RecursionDataset(csv_file1='../recursion_data/train-labels/train.csv', root_dir='../recursion_data/train-data', csv_file2='../recursion_data/train-labels/train_controls.csv', phase = 'val', prop_train=prop_train)
+train_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv', root_dir='../../recursion_data/train-data', csv_file2='../../recursion_data/train-labels/train_controls.csv', phase = 'train', prop_train=prop_train)
+val_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv', root_dir='../../recursion_data/train-data', csv_file2='../../recursion_data/train-labels/train_controls.csv', phase = 'val', prop_train=prop_train)
 
 model = models.resnet18(pretrained=False)
-model.load_state_dict(torch.load('resnet18-5c106cde.pth'))
+model.load_state_dict(torch.load('../BaseModels/resnet18-5c106cde.pth'))
 
 # Freeze all layers if true
 if freeze:

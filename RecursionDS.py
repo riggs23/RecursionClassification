@@ -8,12 +8,12 @@ from torch.utils.data import Dataset
 # from torchvision import transforms, utils, datasets
 from torchvision import transforms as trfm
 import re
-
+import random
 
 class RecursionDataset(Dataset):
     """Recursion Dataset for Big Data Capstone."""
 
-    def __init__(self, csv_file1, root_dir, csv_file2=None, transform=None, shuffle=True):
+    def __init__(self, csv_file1, root_dir, csv_file2=None, transform=None, phase='train', prop_train=1, shuffle=True):
         """
         Args:
             csv_file1 (string): Path to the csv file with most annotations.
@@ -23,6 +23,8 @@ class RecursionDataset(Dataset):
                 on a sample.
             shuffle (boolean): Optional shuffling, defaults to True
         """
+        self.transform = transform
+
         self.csv = pd.read_csv(csv_file1)
         if csv_file2 != None:
             csv2 = pd.read_csv(csv_file2).loc[:,'id_code':'sirna']
@@ -98,9 +100,9 @@ class RecursionDataset(Dataset):
         #print("tT: ", totalTensor.shape, " sT:", sirnaTensor.shape)
 
         # Apply transformation
-        if transform != None:
+        if self.transform != None:
             toPil = trfm.ToPILImage()
-            randTransform = trfm.RandomChoice(transform)
+            randTransform = trfm.RandomChoice(self.transform)
             toTensor = trfm.ToTensor()
             imageTensor = toTensor(randTransform(toPil(imageTensor)))
 
