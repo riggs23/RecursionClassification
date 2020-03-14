@@ -53,9 +53,16 @@ from RecursionDS import RecursionDataset
 # from torchvision import transforms, utils, datasets
 
 assert torch.cuda.is_available() # GPU must be available
-
-train_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv', root_dir='../../recursion_data/train-data', csv_file2='../../recursion_data/train-labels/train_controls.csv', phase = 'train', prop_train=prop_train)
-val_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv', root_dir='../../recursion_data/train-data', csv_file2='../../recursion_data/train-labels/train_controls.csv', phase = 'val', prop_train=prop_train)
+rotations = [transforms.RandomRotation((90,90)),transforms.randomrotation((180,180)),transforms.randomrotation((270,270)), transforms.randomrotation((0,0))]
+transformList = [transforms.RandomHorizontalFlip(), transforms.RandomChoice(rotations)]
+train_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv',
+                                root_dir='../../recursion_data/train-data',
+                                csv_file2='../../recursion_data/train-labels/train_controls.csv',
+                                phase = 'train', prop_train=prop_train, transform=transformList)
+val_dataset = RecursionDataset(csv_file1='../../recursion_data/train-labels/train.csv',
+                                root_dir='../../recursion_data/train-data',
+                                csv_file2='../../recursion_data/train-labels/train_controls.csv',
+                                phase = 'val', prop_train=prop_train)
 
 model = models.resnet18(pretrained=False)
 model.load_state_dict(torch.load('../BaseModels/resnet18-5c106cde.pth'))

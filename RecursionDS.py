@@ -102,7 +102,7 @@ class RecursionDataset(Dataset):
         # Apply transformation
         if self.transform != None:
             toPil = trfm.ToPILImage()
-            randTransform = trfm.RandomChoice(self.transform)
+            randTransform = trfm.RandomOrder(self.transform)
             toTensor = trfm.ToTensor()
             imageTensor = toTensor(randTransform(toPil(imageTensor)))
 
