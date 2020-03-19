@@ -100,9 +100,12 @@ class RecursionDataset(Dataset):
 
         # Apply transformation
         if self.transform != None:
-            toPil = trfm.ToPILImage()
-            randTransform = trfm.RandomOrder(self.transform)
-            toTensor = trfm.ToTensor()
-            totalTensor = toTensor(randTransform(toPil(totalTensor)))
+            toPil = transforms.ToPILImage()
+            randTransform = transforms.RandomOrder(self.transform)
+            toTensor = transforms.ToTensor()
+            tensorHalves = torch.split(totalTensor, 3, dim=0)
+            for half in tensorHalves:
+              half = toTensor(randTransform(toPil(half)))
+            totalTensor = torch.cat(tensorHalves, dim=0)
 
         return totalTensor.float(), sirnaTensor.float()
