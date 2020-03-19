@@ -5,7 +5,7 @@ import pandas as pd
 from skimage import io
 import numpy as np
 from torch.utils.data import Dataset
-from torchvision import transforms as trfm
+from torchvision import transforms
 # from torchvision import transforms, utils, datasets
 import re
 import random
