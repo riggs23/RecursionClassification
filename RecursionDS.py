@@ -103,6 +103,6 @@ class RecursionDataset(Dataset):
             toPil = trfm.ToPILImage()
             randTransform = trfm.RandomOrder(self.transform)
             toTensor = trfm.ToTensor()
-            imageTensor = toTensor(randTransform(toPil(totalTensor)))
+            totalTensor = toTensor(randTransform(toPil(totalTensor)))
 
         return totalTensor.float(), sirnaTensor.float()
